@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>i11e - Hello World!</title>
+</head>
+
+<body>
+Hello World!
+</body>
+<script type="text/javascript" src="../build/i11e.js"></script>
+<script type="text/javascript">
+i11e.addOperator("done", (func) => {
+  var DoneNode = i11e.createNode({
+    onEnd(signal) {
+      func(signal);
+    }
+  });
+
+  return new DoneNode();
+});
+
+var sensor = i11e.ofList([1, 2, 3, 4, 5]);
+
+// var TimerSensor = i11e.createSensor({
+//   watch() {
+//     setInterval(() => {
+//       this.send(100);
+//     }, 2000);
+//   }
+// });
+//
+// sensor = new TimerSensor();
+sensor
+  .throttle(1000)
+  .p((signal, done) => {
+    let v = signal.payload;
+    done(null, signal.setPayload(v*v));
+  })
+  .a((signal, done) => {
+    console.log(signal.payload);
+    done();
+  })
+  .done((signal) => {
+    console.log("DONE!");
+  });
+sensor.watch();
+</script>
+</html>
