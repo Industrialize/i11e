@@ -3,9 +3,15 @@ const EventEmitter = require('eventemitter3');
 const uuid = require('node-uuid');
 const Signal = require('./Signal');
 
+type Status =
+  | "power off"
+  | "connected"
+  | "power on";
+
 class Node {
   _feature: [string];
   _id: string;
+  _status: Status;
   options:? any;
   incomingEvent: string;
   outgoingEvent: string;
@@ -14,6 +20,7 @@ class Node {
   constructor(options : any = {}, eventemitter : EventEmitter) {
     this._feature = ["Node"];
     this._id = uuid.v1();
+    this._status = "power off";
     this.options = options;
     this.incomingEvent = "incoming-"+this.id;
     this.outgoingEvent = "outgoing-"+this.id;
@@ -47,6 +54,11 @@ class Node {
   get feature() : [string] {
     return this._feature;
   }
+
+  get status() : Status {
+    return this._status;
+  }
+
   /**
    * The input data name array in signal
    * @return {array} array of name
@@ -86,9 +98,21 @@ class Node {
   // ==================================================================
 
   /**
+   * run the node
+   */
+  poweron() : void {
+    if (this.status === "power on") {
+      // do nothing
+    } else {
+      this.watch();
+      this._status = "power on";
+    }
+  }
+
+  /**
    * watch the environment
    */
-  watch() : void{
+  watch() : void {
   }
 
   /**
@@ -252,6 +276,8 @@ class Node {
     this.ee.on(this.outgoingEvent, (signal : Signal) => {
       node.push(signal);
     });
+    this._status = "connected";
+    this.poweron();
     return node;
   }
 
@@ -334,6 +360,13 @@ module.exports = {
         } else {
           return super.outputs;
         }
+      }
+
+      poweron() {
+        if (typeof delegate.poweron === "function" && this.status !== "power on") {
+          return delegate.poweron.call(this);
+        }
+        return super.poweron();
       }
 
       watch() {

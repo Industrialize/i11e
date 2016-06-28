@@ -43,6 +43,13 @@ module.exports = {
         }
       }
 
+      poweron() {
+        if (typeof delegate.poweron === "function" && this.status !== "power on") {
+          delegate.poweron.call(this);
+        }
+        super.poweron();
+      }
+
       watch() {
         if (typeof delegate.watch === "function") {
           return delegate.watch.call(this);

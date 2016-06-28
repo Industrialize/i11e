@@ -54,6 +54,13 @@ module.exports = {
         }
       }
 
+      poweron() {
+        if (typeof delegate.poweron === "function" && this.status !== "power on") {
+          delegate.poweron.call(this);
+        }
+        super.poweron();
+      }
+
       process(signal : Signal, done : (err : Error | null | void, result : Signal) => void) {
         if (typeof delegate.process === "function") {
           return delegate.process.call(this, signal, done);

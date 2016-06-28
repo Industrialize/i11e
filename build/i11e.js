@@ -48,6 +48,23 @@
 
 	window.i11e = __webpack_require__(1);
 
+	window.i11e.fromDOMEvent = function (element, event) {
+	  var DOMEventSensor = window.i11e.createSensor({
+	    watch: function watch() {
+	      var _this = this;
+
+	      element.addEventListener(event, function () {
+	        _this.send({
+	          event: event,
+	          sourceId: element.getAttribute("id")
+	        });
+	      });
+	    }
+	  });
+
+	  return new DOMEventSensor();
+	};
+
 /***/ },
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
@@ -151,6 +168,15 @@
 	  return new ErrorHandlerNode();
 	});
 
+	addOperator("done", function (endHandler) {
+	  var DoneNode = Node.create({
+	    onEnd: function onEnd(signal) {
+	      endHandler(signal);
+	    }
+	  });
+	  return new DoneNode();
+	});
+
 	module.exports = {
 	  createNode: Node.create,
 	  createSensor: Sensor.create,
@@ -209,6 +235,7 @@
 
 	    this._feature = ["Node"];
 	    this._id = uuid.v1();
+	    this._status = "power off";
 	    this.options = options;
 	    this.incomingEvent = "incoming-" + this.id;
 	    this.outgoingEvent = "outgoing-" + this.id;
@@ -251,6 +278,21 @@
 	    // ==================================================================
 	    //  Basic methods to override
 	    // ==================================================================
+
+	    /**
+	     * run the node
+	     */
+
+	  }, {
+	    key: 'poweron',
+	    value: function poweron() {
+	      if (this.status === "power on") {
+	        // do nothing
+	      } else {
+	        this.watch();
+	        this._status = "power on";
+	      }
+	    }
 
 	    /**
 	     * watch the environment
@@ -452,6 +494,8 @@
 	      this.ee.on(this.outgoingEvent, function (signal) {
 	        node.push(signal);
 	      });
+	      this._status = "connected";
+	      this.poweron();
 	      return node;
 	    }
 
@@ -498,6 +542,12 @@
 	    get: function get() {
 	      return this._feature;
 	    }
+	  }, {
+	    key: 'status',
+	    get: function get() {
+	      return this._status;
+	    }
+
 	    /**
 	     * The input data name array in signal
 	     * @return {array} array of name
@@ -573,6 +623,14 @@
 	      }
 
 	      _createClass(NewNode, [{
+	        key: 'poweron',
+	        value: function poweron() {
+	          if (typeof delegate.poweron === "function" && this.status !== "power on") {
+	            return delegate.poweron.call(this);
+	          }
+	          return _get(Object.getPrototypeOf(NewNode.prototype), 'poweron', this).call(this);
+	        }
+	      }, {
 	        key: 'watch',
 	        value: function watch() {
 	          if (typeof delegate.watch === "function") {
@@ -10520,6 +10578,14 @@
 	      }
 
 	      _createClass(NewSensor, [{
+	        key: "poweron",
+	        value: function poweron() {
+	          if (typeof delegate.poweron === "function" && this.status !== "power on") {
+	            delegate.poweron.call(this);
+	          }
+	          _get(Object.getPrototypeOf(NewSensor.prototype), "poweron", this).call(this);
+	        }
+	      }, {
 	        key: "watch",
 	        value: function watch() {
 	          if (typeof delegate.watch === "function") {
@@ -10630,6 +10696,14 @@
 	      }
 
 	      _createClass(NewProcessor, [{
+	        key: "poweron",
+	        value: function poweron() {
+	          if (typeof delegate.poweron === "function" && this.status !== "power on") {
+	            delegate.poweron.call(this);
+	          }
+	          _get(Object.getPrototypeOf(NewProcessor.prototype), "poweron", this).call(this);
+	        }
+	      }, {
 	        key: "process",
 	        value: function process(signal, done) {
 	          if (typeof delegate.process === "function") {
@@ -10751,6 +10825,14 @@
 	      }
 
 	      _createClass(NewActuator, [{
+	        key: "poweron",
+	        value: function poweron() {
+	          if (typeof delegate.poweron === "function" && this.status !== "power on") {
+	            delegate.poweron.call(this);
+	          }
+	          _get(Object.getPrototypeOf(NewActuator.prototype), "poweron", this).call(this);
+	        }
+	      }, {
 	        key: "act",
 	        value: function act(signal, done) {
 	          if (typeof delegate.act === "function") {
@@ -10849,6 +10931,14 @@
 	      }
 
 	      _createClass(NewFilter, [{
+	        key: "poweron",
+	        value: function poweron() {
+	          if (typeof delegate.poweron === "function" && this.status !== "power on") {
+	            delegate.poweron.call(this);
+	          }
+	          _get(Object.getPrototypeOf(NewFilter.prototype), "poweron", this).call(this);
+	        }
+	      }, {
 	        key: "accept",
 	        value: function accept(signal) {
 	          if (typeof delegate.accept === "function") {

@@ -92,6 +92,15 @@ addOperator("errors", (errHandler : (signal : Signal, rethrow : (signal : Signal
   return new ErrorHandlerNode();
 });
 
+addOperator("done", (endHandler : (signal : Signal) => void) => {
+  const DoneNode = Node.create({
+    onEnd(signal) {
+      endHandler(signal);
+    }
+  });
+  return new DoneNode();
+});
+
 module.exports = {
   createNode : Node.create,
   createSensor : Sensor.create,
