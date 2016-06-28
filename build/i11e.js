@@ -61,7 +61,6 @@
 	      });
 	    }
 	  });
-
 	  return new DOMEventSensor();
 	};
 
@@ -470,11 +469,7 @@
 	    key: 'push',
 	    value: function push(signal) {
 	      if (!Signal.isSignal(signal)) signal = this.newSignal(signal);
-	      if (signal.get("signalType") === "watch") {
-	        this.watch();
-	      } else {
-	        this.ee.emit(this.incomingEvent, signal);
-	      }
+	      this.ee.emit(this.incomingEvent, signal);
 	      return this;
 	    }
 	  }, {
@@ -495,7 +490,7 @@
 	        node.push(signal);
 	      });
 	      this._status = "connected";
-	      this.poweron();
+	      node.poweron();
 	      return node;
 	    }
 

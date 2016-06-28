@@ -11,6 +11,5 @@ window.i11e.fromDOMEvent = (element, event) => {
       });
     }
   });
-
   return new DOMEventSensor();
 }

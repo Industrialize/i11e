@@ -255,11 +255,7 @@ class Node {
    */
   push(signal : Signal) {
     if (!Signal.isSignal(signal)) signal = this.newSignal(signal);
-    if (signal.get("signalType") === "watch") {
-      this.watch();
-    } else {
-      this.ee.emit(this.incomingEvent, signal);
-    }
+    this.ee.emit(this.incomingEvent, signal);
     return this;
   }
 
@@ -277,7 +273,7 @@ class Node {
       node.push(signal);
     });
     this._status = "connected";
-    this.poweron();
+    node.poweron();
     return node;
   }
 

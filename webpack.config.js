@@ -1,9 +1,11 @@
 var path = require('path');
 module.exports = {
-    entry: './lib/web-entry.js',
+    entry: {
+      i11e: './lib/web-entry.js'
+    },
     output: {
         path: path.join(__dirname, "build"),
-        filename: 'i11e.js'
+        filename: '[name].js'
     },
     module: {
       loaders: [
