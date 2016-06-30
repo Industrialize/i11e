@@ -102,6 +102,13 @@ addOperator("done", (endHandler : (signal : Signal) => void) => {
 });
 
 module.exports = {
+  Node : Node.Class,
+  Sensor : Sensor.Class,
+  Processor : Processor.Class,
+  Actuator : Actuator.Class,
+  Filter : Filter.Class,
+  Signal : Signal,
+
   createNode : Node.create,
   createSensor : Sensor.create,
   createProcessor : Processor.create,
@@ -123,5 +130,6 @@ module.exports = {
   hasError : Signal.hasError,
   isEnd : Signal.isEnd,
 
-  ofList : BasicSensors.ofList
+  ofList : BasicSensors.ofList,
+  just : BasicSensors.just
 }

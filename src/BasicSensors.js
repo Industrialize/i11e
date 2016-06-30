@@ -11,8 +11,19 @@ const ListSensor = Sensor.create({
   }
 });
 
+const JustSensor = Sensor.create({
+  watch() {
+    this.send(new Signal(this.options));
+    this.send(Signal.End());
+  }
+});
+
 module.exports = {
   ofList(elements : [any]) : Sensor.Class {
     return new ListSensor(elements);
+  },
+
+  just(element : any) : Sensor.Class {
+    return new JustSensor(element);
   }
 }
